@@ -1,0 +1,144 @@
+{
+    "hedis": [
+      {
+        "name": "Age Criteria BCS",
+        "description": "Age criteria for BCS Measure",
+        "prompt": "What is the age criteria for BCS Measure?"
+      },
+      {
+        "name": "Exclusion Criteria BCS",
+        "description": "Exclusion criteria for BCS Measure",
+        "prompt": "What are the exclusion criterias for BCS Measure?"
+      },
+      {
+        "name": "Bilateral Mastectomy Codes",
+        "description": "Codes in Bilateral Mastectomy Value Set",
+        "prompt": "What are the codes in Bilateral Mastectomy Value Set?"
+      },
+      {
+        "name": "Palliative Care Exclusion",
+        "description": "Palliative care exclusion from BCS",
+        "prompt": "Members receiving palliative care any time during the measurement period, Are they excluded from BCS Measure?"
+      },
+      {
+        "name": "Numerator Criteria BCS",
+        "description": "Numerator criteria for BCS Measure",
+        "prompt": "What is the Numerator criteria for BCS Meausre?"
+      },
+      {
+        "name": "CBP Measure",
+        "description": "Definition of HEDIS CBP measure",
+        "prompt": "What is HEDIS CBP measure?"
+      },
+      {
+        "name": "CBP Most Recent BP",
+        "description": "Most recent BP reading in CBP",
+        "prompt": "Does CBP meausre looks for the most recent BP reading in Measure ment year?"
+      },
+      {
+        "name": "CBP Multiple BP Readings",
+        "description": "Multiple BP readings on same service date",
+        "prompt": "If multiple BP reading are available for the same service date , what values will be considered ?"
+      },
+      {
+        "name": "CBP Race Stratification",
+        "description": "Race stratification for CBP HEDIS Reporting",
+        "prompt": "What are the different race startification for CBP HEDIS  Reporting"
+      },
+      {
+        "name": "CBP Diastolic Compliance",
+        "description": "CBP compliance with diastolic BP 95 mm Hg",
+        "prompt": "If the members diastolic BP reading is 95 mm Hg , Is he/she CBP compliant ?"
+      },
+      {
+        "name": "Continuous Enrollment Medicaid",
+        "description": "Continuous enrollment for Medicaid",
+        "prompt": "What is the continuos enrollment criteria for Medicaid benficiaries?"
+      },
+      {
+        "name": "CBP Acute Inpatient ED Visit",
+        "description": "Effect of acute inpatient or ED visit BP readings",
+        "prompt": "Does BP readings  taken in an acute inpatient setting   or during an ED visit contribute to a mamber's CBP compliance ?"
+      },
+      {
+        "name": "Age Criteria COL",
+        "description": "Age criteria for COL measure",
+        "prompt": "What is the age criteria for COL measure"
+      },
+      {
+        "name": "COL Data Collection Method",
+        "description": "Data collection method for COL for Medicaid",
+        "prompt": "What data collection method is used for COL measure when reporting for Medicaid?"
+      }
+    ],
+    "safetynet": [
+      {
+        "name": "Record Count",
+        "description": "Get record count from all tables",
+        "prompt": "Get record count from all of the tables."
+      },
+      {
+        "name": "Max Discrepancy Table",
+        "description": "SPS safety net error table with max discrepancies",
+        "prompt": "Which SPS safety net error table has maximum number of discrepancies?"
+      },
+      {
+        "name": "Orgs Without Individuals",
+        "description": "Orgs without individuals associated",
+        "prompt": "How many Orgs have no individuals associated to it?"
+      },
+      {
+        "name": "Individuals Without Orgs",
+        "description": "Percentage of individuals with no orgs",
+        "prompt": "What % of Individuals have no Orgs associated to them?"
+      },
+      {
+        "name": "Missing Specialty GA",
+        "description": "Individuals missing specialty for GA",
+        "prompt": "How many Individuals have missing Specialty for GA?"
+      }
+    ],
+    "crem": [
+      {
+        "name": "Rule Steps ID 4",
+        "description": "Steps and description for rule id 4",
+        "prompt": "List all steps and description for rule id 4"
+      },
+      {
+        "name": "Ruleset Name PC2",
+        "description": "Rulesets with name like PC2",
+        "prompt": "All rulesets and descriptions with rule set name  like 'PC2'"
+      },
+      {
+        "name": "Monthly Frequency Rulesets",
+        "description": "Rulesets that run monthly",
+        "prompt": "All rulesets runs with the monthly frequency"
+      },
+      {
+        "name": "Monthly Frequency Run IDs",
+        "description": "Monthly frequency run IDs last 3 months",
+        "prompt": "List the run ids and aaods for the monthly frequency runs for last three months."
+      },
+      {
+        "name": "Daily Frequency Analysis Dates",
+        "description": "Analysis dates for daily frequency runs",
+        "prompt": "List the run ids and analysis as of date for the daily frequency runs for last three months."
+      },
+      {
+        "name": "Daily Frequency Run IDs",
+        "description": "Daily frequency run IDs",
+        "prompt": "List the run ids and aaods for the daily frequency runs for last three months."
+      },
+      {
+        "name": "Deviation in Rule IDs",
+        "description": "Rule IDs with denominator deviation > 0.05",
+        "prompt": "Compare the member counts between last two runs by rule id, and list all the rule ids with the denominator deviation > +0.05"
+      },
+      {
+        "name": "Deviation Step Details",
+        "description": "Step-level deviations in rule IDs",
+        "prompt": "Identify the last two runs for monthly frequency runs, for each of the ruleset run ids list out the rule ids with the denominator deviation > +0.05, identify the deviations at the step level for each ruleset id and rule. Return the step name and notes."
+      }
+    ],
+    
+  }
