@@ -1,0 +1,24 @@
+{
+    "safetynet": [
+      {
+        "user_context": "Initialization",
+        "prompt": "Get record count from all of the tables."
+      },
+      {
+        "user_context": "Initialization",
+        "prompt": "Which SPS safety net error table has maximum number of discrepancies?"
+      },
+      {
+        "user_context": "Initialization",
+        "prompt": "How many Orgs have no individuals associated to it?"
+      },
+      {
+        "user_context": "Initialization",
+        "prompt": "What % of Individuals have no Orgs associated to them?"
+      },
+      {
+        "user_context": "Initialization",
+        "prompt": "How many Individuals have missing Specialty for GA?"
+      }
+    ]
+}
