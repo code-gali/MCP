@@ -1,18 +1,18 @@
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
-#from dependencies import SnowFlakeConnector
+from dependencies import SnowFlakeConnector
 import httpx
 
 from urllib.parse import urlparse
 from pathlib import Path
 import json 
-#import  snowflake.connector
+import  snowflake.connector
 import requests  
 import os
-#from snowflake.connector import SnowflakeConnection
-#from snowflake.connector.errors import DatabaseError
-#from snowflake.core import Root
+from snowflake.connector import SnowflakeConnection
+from snowflake.connector.errors import DatabaseError
+from snowflake.core import Root
 from typing import Optional, List
 from fastapi import (
  HTTPException,
