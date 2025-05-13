@@ -1,0 +1,124 @@
+import streamlit as st
+import asyncio
+import nest_asyncio
+from mcp.client.sse import sse_client
+from mcp import ClientSession
+
+nest_asyncio.apply()
+
+st.set_page_config(page_title="Healthcare Prompt Manager", page_icon="🧠", layout="wide")
+st.title("🧠 Healthcare Prompt & Question Manager")
+
+server_url = st.sidebar.text_input("MCP Server URL", "http://localhost:8000/sse")
+
+# --- Tabs ---
+tab1, tab2, tab3 = st.tabs(["Add Prompt", "Add Question", "View Server Info"])
+
+# --- Tab 1: Add Prompt ---
+with tab1:
+    st.header("📌 Add Prompt")
+    app_code = st.text_input("Application Code", "hedis", key="app_code_prompt")
+    prompt_name = st.text_input("Prompt Name", "hedis-prompt")
+    prompt_desc = st.text_input("Description", "Prompt for HEDIS analysis")
+    prompt_content = st.text_area("Prompt Content", "You are an expert in HEDIS...")
+
+    if st.button("Add Prompt"):
+        async def add_prompt():
+            try:
+                async with sse_client(url=server_url) as sse:
+                    async with ClientSession(*sse) as session:
+                        await session.initialize()
+                        uri = f"genaiplatform://{app_code}/prompts/{prompt_name}"
+                        result = await session.call_tool(
+                            name="add-prompts",
+                            arguments={
+                                "uri": uri,
+                                "prompts": [
+                                    {
+                                        "prompt_name": prompt_name,
+                                        "description": prompt_desc,
+                                        "content": prompt_content
+                                    }
+                                ]
+                            }
+                        )
+                        st.success("✅ Prompt added successfully")
+                        st.json(result.dict())
+            except Exception as e:
+                st.error(f"❌ Failed to add prompt: {e}")
+
+        asyncio.run(add_prompt())
+
+# --- Tab 2: Add Question ---
+with tab2:
+    st.header("❓ Add Frequent Question")
+    app_code_q = st.text_input("Application Code", "hedis", key="app_code_question")
+    user_context = st.text_input("User Context", "Initialization")
+    question_prompt = st.text_input("Question", "What is the age criteria for CBP?")
+
+    if st.button("Add Question"):
+        async def add_question():
+            try:
+                async with sse_client(url=server_url) as sse:
+                    async with ClientSession(*sse) as session:
+                        await session.initialize()
+                        uri = f"genaiplatform://{app_code_q}/frequent_questions/{user_context}"
+                        result = await session.call_tool(
+                            name="add-frequent-questions",
+                            arguments={
+                                "uri": uri,
+                                "questions": [
+                                    {"user_context": user_context, "prompt": question_prompt}
+                                ]
+                            }
+                        )
+                        st.success("✅ Question added successfully")
+                        st.json(result.dict())
+            except Exception as e:
+                st.error(f"❌ Failed to add question: {e}")
+
+        asyncio.run(add_question())
+
+# --- Tab 3: Server Info ---
+with tab3:
+    st.header("📡 MCP Server Info")
+
+    async def fetch_info():
+        info = {"resources": [], "tools": [], "prompts": []}
+        try:
+            async with sse_client(url=server_url) as sse:
+                async with ClientSession(*sse) as session:
+                    await session.initialize()
+                    resources = await session.list_resources()
+                    tools = await session.list_tools()
+                    prompts = await session.list_prompts()
+
+                    if hasattr(resources, 'resources'):
+                        for r in resources.resources:
+                            info["resources"].append({"name": r.name, "description": r.description})
+
+                    if hasattr(tools, 'tools'):
+                        for t in tools.tools:
+                            info["tools"].append({"name": t.name, "description": getattr(t, 'description', 'No description')})
+
+                    if hasattr(prompts, 'prompts'):
+                        for p in prompts.prompts:
+                            info["prompts"].append({"name": p.name, "description": getattr(p, 'description', '')})
+
+        except Exception as e:
+            st.error(f"Error fetching info: {e}")
+        return info
+
+    server_info = asyncio.run(fetch_info())
+
+    with st.expander("📦 Resources", expanded=False):
+        for r in server_info["resources"]:
+            st.markdown(f"**{r['name']}** - {r['description']}")
+
+    with st.expander("🛠 Tools", expanded=False):
+        for t in server_info["tools"]:
+            st.markdown(f"**{t['name']}** - {t['description']}")
+
+    with st.expander("🧠 Prompts", expanded=False):
+        for p in server_info["prompts"]:
+            st.markdown(f"**{p['name']}** - {p['description']}")
