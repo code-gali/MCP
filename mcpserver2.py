@@ -207,24 +207,24 @@ async def add_prompts(ctx: Context,uri: str,prompt: dict) -> dict:
     prompt_name = Path(url_path.path).name
     #Before adding the prompt to file add to the server 
     ##Add prompts to server 
-    def func1(content,query):
+    def func1(query: str ):
         return [
             {
                 "role": "user",
-                "content": content
+                "content": f"{query}"
             }
         ]
     ctx.fastmcp.add_prompt(
         Prompt.from_function(
-            partial(func1(prompt["content"])),name = prompt["prompt_name"],description=prompt["description"])
+            func1,name = prompt["prompt_name"],description=prompt["description"])
     )
-    
+
     file_data = {}
     file_name = aplctn_cd + "_prompts.json"
     if Path(file_name).exists(): 
         file = open(file_name,'r')
         file_data  = json.load(file)
-        file_data[aplctn_cd].extend(prompt)
+        file_data[aplctn_cd].append(prompt)
     else:
        
         file_data[aplctn_cd] =  [prompt]
