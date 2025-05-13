@@ -206,12 +206,13 @@ async def add_prompts(ctx: Context,uri: str,prompt: dict) -> dict:
     aplctn_cd = url_path.netloc
     prompt_name = Path(url_path.path).name
     #Before adding the prompt to file add to the server 
-    ##Add prompts to server 
+    ##Add prompts to server
+     
     def func1(query: str ):
         return [
             {
                 "role": "user",
-                "content": f"{query}"
+                "content": prompt["content"] + f"\n  {query}"
             }
         ]
     ctx.fastmcp.add_prompt(
