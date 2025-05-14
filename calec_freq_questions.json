@@ -1,0 +1,14 @@
+{
+    "calculator": [
+      {
+        "prompt": "Caleculate the expression (4+5)/2.0"
+      },
+      {
+        "prompt": "Caleculate the math function sqrt(16) + 7"
+      },
+      {
+        "prompt": "Caleculate the expression 3^4 - 12"
+      }
+    ]
+  }
+  
