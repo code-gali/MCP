@@ -1,0 +1,677 @@
+[
+  {
+    "policy_id": "POL-2000",
+    "holder_name": "Rhonda Huffman",
+    "age": 27,
+    "gender": "Male",
+    "insurance_provider": "Hester, Woods and Wilson",
+    "plan_type": "HMO",
+    "coverage_start": "2023-03-01",
+    "coverage_end": "2024-11-23",
+    "premium_amount": 490.89,
+    "deductible": 1550.29,
+    "co_pay": 43.86,
+    "covered_services": [
+      "Mental Health",
+      "Dental",
+      "Surgery"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 3904.45,
+    "agent_name": "Jessica Lawrence",
+    "agent_contact": "+1-739-308-7015x4953"
+  },
+  {
+    "policy_id": "POL-2001",
+    "holder_name": "Dustin Lee",
+    "age": 63,
+    "gender": "Female",
+    "insurance_provider": "Little Ltd",
+    "plan_type": "PPO",
+    "coverage_start": "2023-10-14",
+    "coverage_end": "2025-05-04",
+    "premium_amount": 331.81,
+    "deductible": 4659.75,
+    "co_pay": 23.2,
+    "covered_services": [
+      "Mental Health",
+      "Surgery",
+      "Vision"
+    ],
+    "excluded_services": [
+      "Cosmetic Surgery",
+      "Chiropractic"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 4436.68,
+    "agent_name": "Stuart Nelson",
+    "agent_contact": "(033)147-3060x5961"
+  },
+  {
+    "policy_id": "POL-2002",
+    "holder_name": "Carolyn Garcia",
+    "age": 19,
+    "gender": "Female",
+    "insurance_provider": "Sanchez-Horne",
+    "plan_type": "PPO",
+    "coverage_start": "2022-09-14",
+    "coverage_end": "2024-12-21",
+    "premium_amount": 428.45,
+    "deductible": 2922.29,
+    "co_pay": 14.07,
+    "covered_services": [
+      "Surgery",
+      "Dental",
+      "Emergency Room"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 2856.91,
+    "agent_name": "Patrick Horton",
+    "agent_contact": "053.270.2004"
+  },
+  {
+    "policy_id": "POL-2003",
+    "holder_name": "Patrick Franco",
+    "age": 21,
+    "gender": "Male",
+    "insurance_provider": "Khan PLC",
+    "plan_type": "POS",
+    "coverage_start": "2022-06-04",
+    "coverage_end": "2024-09-22",
+    "premium_amount": 725.94,
+    "deductible": 2524.0,
+    "co_pay": 12.72,
+    "covered_services": [
+      "Emergency Room",
+      "Vision",
+      "Dental"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 4893.09,
+    "agent_name": "Rachel Weber",
+    "agent_contact": "410.950.4666"
+  },
+  {
+    "policy_id": "POL-2004",
+    "holder_name": "Michael Murray",
+    "age": 70,
+    "gender": "Female",
+    "insurance_provider": "Lane-Andrews",
+    "plan_type": "HMO",
+    "coverage_start": "2023-08-17",
+    "coverage_end": "2024-07-08",
+    "premium_amount": 427.27,
+    "deductible": 780.04,
+    "co_pay": 37.54,
+    "covered_services": [
+      "Maternity",
+      "Surgery",
+      "Dental"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 5568.78,
+    "agent_name": "Sandra Young MD",
+    "agent_contact": "9405503122"
+  },
+  {
+    "policy_id": "POL-2005",
+    "holder_name": "Megan Oconnor",
+    "age": 19,
+    "gender": "Male",
+    "insurance_provider": "Dennis PLC",
+    "plan_type": "EPO",
+    "coverage_start": "2024-05-08",
+    "coverage_end": "2024-06-01",
+    "premium_amount": 131.75,
+    "deductible": 4727.13,
+    "co_pay": 35.8,
+    "covered_services": [
+      "General Checkup",
+      "Mental Health",
+      "Surgery"
+    ],
+    "excluded_services": [
+      "Chiropractic",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Lapsed",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 6262.15,
+    "agent_name": "Kyle Gonzalez",
+    "agent_contact": "(122)239-6998x8284"
+  },
+  {
+    "policy_id": "POL-2006",
+    "holder_name": "Carly Martin",
+    "age": 65,
+    "gender": "Female",
+    "insurance_provider": "Davis-Kim",
+    "plan_type": "PPO",
+    "coverage_start": "2023-07-15",
+    "coverage_end": "2024-10-11",
+    "premium_amount": 524.57,
+    "deductible": 2915.65,
+    "co_pay": 39.53,
+    "covered_services": [
+      "Vision",
+      "Maternity",
+      "Surgery"
+    ],
+    "excluded_services": [
+      "Alternative Therapy",
+      "Chiropractic"
+    ],
+    "policy_status": "Lapsed",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 2444.53,
+    "agent_name": "Jill Lester",
+    "agent_contact": "+1-952-591-9877x10474"
+  },
+  {
+    "policy_id": "POL-2007",
+    "holder_name": "Joshua Mcdonald",
+    "age": 69,
+    "gender": "Male",
+    "insurance_provider": "Brown Group",
+    "plan_type": "EPO",
+    "coverage_start": "2023-10-21",
+    "coverage_end": "2025-05-01",
+    "premium_amount": 627.38,
+    "deductible": 1491.36,
+    "co_pay": 34.89,
+    "covered_services": [
+      "Mental Health",
+      "Surgery",
+      "General Checkup"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 6812.33,
+    "agent_name": "Miguel Brown",
+    "agent_contact": "(782)668-0215x7889"
+  },
+  {
+    "policy_id": "POL-2008",
+    "holder_name": "Kelly Woodward",
+    "age": 49,
+    "gender": "Male",
+    "insurance_provider": "Clark-Mcdonald",
+    "plan_type": "PPO",
+    "coverage_start": "2022-09-18",
+    "coverage_end": "2024-07-21",
+    "premium_amount": 716.88,
+    "deductible": 944.96,
+    "co_pay": 30.98,
+    "covered_services": [
+      "Mental Health",
+      "General Checkup",
+      "Vision"
+    ],
+    "excluded_services": [
+      "Cosmetic Surgery",
+      "Fertility Treatment"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 638.68,
+    "agent_name": "Jasmine Klein",
+    "agent_contact": "(253)151-6009"
+  },
+  {
+    "policy_id": "POL-2009",
+    "holder_name": "Ms. Amanda Gray",
+    "age": 61,
+    "gender": "Female",
+    "insurance_provider": "Sullivan-Jackson",
+    "plan_type": "EPO",
+    "coverage_start": "2023-05-14",
+    "coverage_end": "2024-06-10",
+    "premium_amount": 453.31,
+    "deductible": 868.38,
+    "co_pay": 37.92,
+    "covered_services": [
+      "Dental",
+      "General Checkup",
+      "Vision"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Alternative Therapy"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 5333.66,
+    "agent_name": "Sara Shaw",
+    "agent_contact": "733-619-6587x08479"
+  },
+  {
+    "policy_id": "POL-2010",
+    "holder_name": "Brandon Guerrero",
+    "age": 58,
+    "gender": "Male",
+    "insurance_provider": "Robinson Group",
+    "plan_type": "EPO",
+    "coverage_start": "2023-12-31",
+    "coverage_end": "2025-04-06",
+    "premium_amount": 619.07,
+    "deductible": 2140.53,
+    "co_pay": 29.11,
+    "covered_services": [
+      "Surgery",
+      "Maternity",
+      "Vision"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 3006.49,
+    "agent_name": "Madison Neal",
+    "agent_contact": "(474)265-5220x8296"
+  },
+  {
+    "policy_id": "POL-2011",
+    "holder_name": "Mckenzie Gonzalez",
+    "age": 60,
+    "gender": "Male",
+    "insurance_provider": "Washington, Davis and Haas",
+    "plan_type": "EPO",
+    "coverage_start": "2023-03-26",
+    "coverage_end": "2025-02-01",
+    "premium_amount": 279.17,
+    "deductible": 782.52,
+    "co_pay": 12.01,
+    "covered_services": [
+      "Dental",
+      "Emergency Room",
+      "General Checkup"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 1807.47,
+    "agent_name": "Crystal Blanchard",
+    "agent_contact": "001-491-309-3740x355"
+  },
+  {
+    "policy_id": "POL-2012",
+    "holder_name": "Amy Lewis",
+    "age": 25,
+    "gender": "Male",
+    "insurance_provider": "Brown, Smith and Choi",
+    "plan_type": "POS",
+    "coverage_start": "2023-03-16",
+    "coverage_end": "2025-02-02",
+    "premium_amount": 704.09,
+    "deductible": 4849.35,
+    "co_pay": 49.71,
+    "covered_services": [
+      "Mental Health",
+      "Dental",
+      "General Checkup"
+    ],
+    "excluded_services": [
+      "Chiropractic",
+      "Alternative Therapy"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 4978.64,
+    "agent_name": "Selena Miller",
+    "agent_contact": "007.563.4667x46567"
+  },
+  {
+    "policy_id": "POL-2013",
+    "holder_name": "David Chambers",
+    "age": 54,
+    "gender": "Female",
+    "insurance_provider": "Chang, Wells and Neal",
+    "plan_type": "EPO",
+    "coverage_start": "2023-02-25",
+    "coverage_end": "2024-09-20",
+    "premium_amount": 392.29,
+    "deductible": 3672.06,
+    "co_pay": 35.18,
+    "covered_services": [
+      "Surgery",
+      "Dental",
+      "Vision"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Alternative Therapy"
+    ],
+    "policy_status": "Lapsed",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 3572.01,
+    "agent_name": "Yvette Joseph",
+    "agent_contact": "001-373-934-4395x58028"
+  },
+  {
+    "policy_id": "POL-2014",
+    "holder_name": "Luis Wilson",
+    "age": 27,
+    "gender": "Female",
+    "insurance_provider": "Walton, Ramirez and Bailey",
+    "plan_type": "POS",
+    "coverage_start": "2022-08-26",
+    "coverage_end": "2025-01-30",
+    "premium_amount": 236.18,
+    "deductible": 1111.85,
+    "co_pay": 13.05,
+    "covered_services": [
+      "Vision",
+      "Maternity",
+      "Mental Health"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 7894.33,
+    "agent_name": "Trevor Duncan",
+    "agent_contact": "934.416.4705x1010"
+  },
+  {
+    "policy_id": "POL-2015",
+    "holder_name": "Robert Smith",
+    "age": 75,
+    "gender": "Female",
+    "insurance_provider": "Berry and Sons",
+    "plan_type": "PPO",
+    "coverage_start": "2024-04-29",
+    "coverage_end": "2024-06-15",
+    "premium_amount": 400.29,
+    "deductible": 1000.29,
+    "co_pay": 28.59,
+    "covered_services": [
+      "Mental Health",
+      "Surgery",
+      "Maternity"
+    ],
+    "excluded_services": [
+      "Cosmetic Surgery",
+      "Alternative Therapy"
+    ],
+    "policy_status": "Terminated",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 5553.38,
+    "agent_name": "Elizabeth Noble",
+    "agent_contact": "(619)928-3579"
+  },
+  {
+    "policy_id": "POL-2016",
+    "holder_name": "Dennis Rogers",
+    "age": 53,
+    "gender": "Female",
+    "insurance_provider": "Thompson, Hart and Johnson",
+    "plan_type": "POS",
+    "coverage_start": "2022-10-13",
+    "coverage_end": "2024-09-16",
+    "premium_amount": 599.1,
+    "deductible": 1168.53,
+    "co_pay": 28.98,
+    "covered_services": [
+      "Surgery",
+      "General Checkup",
+      "Emergency Room"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 8462.86,
+    "agent_name": "Stephanie White",
+    "agent_contact": "+1-258-737-9089x629"
+  },
+  {
+    "policy_id": "POL-2017",
+    "holder_name": "Logan Richards",
+    "age": 59,
+    "gender": "Male",
+    "insurance_provider": "Rivera, Sanchez and Martinez",
+    "plan_type": "HMO",
+    "coverage_start": "2023-10-02",
+    "coverage_end": "2024-08-19",
+    "premium_amount": 203.81,
+    "deductible": 3979.88,
+    "co_pay": 15.59,
+    "covered_services": [
+      "Vision",
+      "Emergency Room",
+      "Maternity"
+    ],
+    "excluded_services": [
+      "Alternative Therapy",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Lapsed",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 756.21,
+    "agent_name": "Lauren Campbell",
+    "agent_contact": "372.211.5241x7951"
+  },
+  {
+    "policy_id": "POL-2018",
+    "holder_name": "Michael Wright",
+    "age": 21,
+    "gender": "Male",
+    "insurance_provider": "Williams-Wright",
+    "plan_type": "HMO",
+    "coverage_start": "2023-10-30",
+    "coverage_end": "2024-10-15",
+    "premium_amount": 677.72,
+    "deductible": 1469.81,
+    "co_pay": 16.07,
+    "covered_services": [
+      "Vision",
+      "Emergency Room",
+      "Maternity"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 9968.45,
+    "agent_name": "Jeffrey Stanton",
+    "agent_contact": "002-874-4455"
+  },
+  {
+    "policy_id": "POL-2019",
+    "holder_name": "Joseph Lee",
+    "age": 44,
+    "gender": "Male",
+    "insurance_provider": "Arnold, Lang and Bradley",
+    "plan_type": "POS",
+    "coverage_start": "2022-06-28",
+    "coverage_end": "2025-03-28",
+    "premium_amount": 270.19,
+    "deductible": 2637.01,
+    "co_pay": 29.91,
+    "covered_services": [
+      "Surgery",
+      "General Checkup",
+      "Vision"
+    ],
+    "excluded_services": [
+      "Alternative Therapy",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Lapsed",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 5628.03,
+    "agent_name": "Holly Anderson",
+    "agent_contact": "+1-379-115-3538x8085"
+  },
+  {
+    "policy_id": "POL-2020",
+    "holder_name": "Stephanie Houston",
+    "age": 54,
+    "gender": "Female",
+    "insurance_provider": "Schultz Inc",
+    "plan_type": "EPO",
+    "coverage_start": "2022-11-07",
+    "coverage_end": "2024-09-27",
+    "premium_amount": 723.17,
+    "deductible": 872.12,
+    "co_pay": 49.2,
+    "covered_services": [
+      "Emergency Room",
+      "Mental Health",
+      "Surgery"
+    ],
+    "excluded_services": [
+      "Cosmetic Surgery",
+      "Chiropractic"
+    ],
+    "policy_status": "Lapsed",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 6416.56,
+    "agent_name": "Tiffany Willis",
+    "agent_contact": "6090710601"
+  },
+  {
+    "policy_id": "POL-2021",
+    "holder_name": "Charles Thomas",
+    "age": 71,
+    "gender": "Male",
+    "insurance_provider": "Johnson, Moore and York",
+    "plan_type": "POS",
+    "coverage_start": "2023-08-06",
+    "coverage_end": "2025-03-08",
+    "premium_amount": 786.42,
+    "deductible": 2356.05,
+    "co_pay": 34.84,
+    "covered_services": [
+      "Emergency Room",
+      "Surgery",
+      "Dental"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 2286.09,
+    "agent_name": "Adrienne Noble",
+    "agent_contact": "737-084-7110"
+  },
+  {
+    "policy_id": "POL-2022",
+    "holder_name": "Eric Cohen",
+    "age": 44,
+    "gender": "Female",
+    "insurance_provider": "Butler-Miles",
+    "plan_type": "PPO",
+    "coverage_start": "2023-11-08",
+    "coverage_end": "2025-02-16",
+    "premium_amount": 257.99,
+    "deductible": 4712.09,
+    "co_pay": 25.8,
+    "covered_services": [
+      "Maternity",
+      "Mental Health",
+      "Emergency Room"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 5735.36,
+    "agent_name": "Michael Garcia",
+    "agent_contact": "061.906.2741"
+  },
+  {
+    "policy_id": "POL-2023",
+    "holder_name": "Steven Taylor",
+    "age": 61,
+    "gender": "Male",
+    "insurance_provider": "Spears LLC",
+    "plan_type": "HMO",
+    "coverage_start": "2022-07-18",
+    "coverage_end": "2024-08-07",
+    "premium_amount": 239.24,
+    "deductible": 3460.4,
+    "co_pay": 46.52,
+    "covered_services": [
+      "Mental Health",
+      "Dental",
+      "Surgery"
+    ],
+    "excluded_services": [
+      "Fertility Treatment",
+      "Chiropractic"
+    ],
+    "policy_status": "Lapsed",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 7747.84,
+    "agent_name": "Scott Chambers",
+    "agent_contact": "(398)045-5834"
+  },
+  {
+    "policy_id": "POL-2024",
+    "holder_name": "Carrie Rodriguez",
+    "age": 49,
+    "gender": "Male",
+    "insurance_provider": "Moody LLC",
+    "plan_type": "EPO",
+    "coverage_start": "2023-04-07",
+    "coverage_end": "2024-07-25",
+    "premium_amount": 534.63,
+    "deductible": 2287.07,
+    "co_pay": 30.44,
+    "covered_services": [
+      "Mental Health",
+      "General Checkup",
+      "Dental"
+    ],
+    "excluded_services": [
+      "Chiropractic",
+      "Cosmetic Surgery"
+    ],
+    "policy_status": "Active",
+    "last_claim_date": "2025-05-27",
+    "last_claim_amount": 5664.65,
+    "agent_name": "Sarah Fritz",
+    "agent_contact": "(788)619-4015x5553"
+  }
+]
