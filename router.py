@@ -28,6 +28,11 @@ from typing_extensions import (
     Literal
 )
 from logging import Logger
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 from models import (
      CompleteQryModel,
      GenAiCortexAudit,
@@ -37,7 +42,11 @@ from models import (
      SearchModel,
      AnalystModel,
      LoadVectorModel,
-     UploadFileModel
+     UploadFileModel,
+     PromptModel,
+     PromptResponse,
+     FrequentQuestionModel,
+     FrequentQuestionResponse
 )
 from prompts import (
     get_conv_response,
@@ -763,7 +772,7 @@ async def upload_file(
         )
 # Prompt endpoints
 @route.get("/prompts/{aplctn_cd}", response_model=List[PromptResponse])
-def get_prompts(aplctn_cd: str):
+async def get_prompts(aplctn_cd: str):
     """Get all prompts for an application"""
     logger.debug(f"GET /prompts/{aplctn_cd}")
     try:
@@ -788,7 +797,7 @@ def get_prompts(aplctn_cd: str):
         )
 
 @route.post("/prompts", response_model=PromptResponse)
-def add_prompt(prompt: PromptModel):
+async def add_prompt(prompt: PromptModel):
     """Add a new prompt"""
     logger.debug(f"POST /prompts with data: {prompt.model_dump()}")
     try:
@@ -836,7 +845,7 @@ def add_prompt(prompt: PromptModel):
 
 # Frequent Questions endpoints
 @route.get("/frequent_questions/{aplctn_cd}/{user_context}", response_model=List[FrequentQuestionResponse])
-def get_frequent_questions(aplctn_cd: str, user_context: str):
+async def get_frequent_questions(aplctn_cd: str, user_context: str):
     """Get frequent questions for an application and context"""
     logger.debug(f"GET /frequent_questions/{aplctn_cd}/{user_context}")
     try:
@@ -861,7 +870,7 @@ def get_frequent_questions(aplctn_cd: str, user_context: str):
         )
 
 @route.post("/frequent_questions", response_model=FrequentQuestionResponse)
-def add_frequent_question(q: FrequentQuestionModel):
+async def add_frequent_question(q: FrequentQuestionModel):
     """Add a new frequent question"""
     logger.debug(f"POST /frequent_questions with data: {q.model_dump()}")
     try:
