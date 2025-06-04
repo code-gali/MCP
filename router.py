@@ -776,32 +776,47 @@ async def get_prompts(aplctn_cd: str):
     """Get all prompts for an application"""
     logger.debug(f"GET /prompts/{aplctn_cd}")
     try:
-        file_path = f"{aplctn_cd}_prompts.json"
+        file_path = os.path.join(SCRIPT_DIR, f"{aplctn_cd}_prompts.json")
+        logger.debug(f"Looking for prompts file at: {file_path}")
+        
+        if not os.path.exists(file_path):
+            logger.error(f"File does not exist: {file_path}")
+            return JSONResponse(content=[], status_code=200)
+            
         try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                file_content = f.read()
+                logger.debug(f"Raw file content: {file_content}")
+                if not file_content.strip():
+                    logger.warning("File is empty")
+                    return JSONResponse(content=[], status_code=200)
+                data = json.loads(file_content)
+                logger.debug(f"Parsed JSON data: {data}")
         except FileNotFoundError:
-            data = {}
-        except json.JSONDecodeError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid JSON file"
-            )
+            logger.error(f"File not found: {file_path}")
+            return JSONResponse(content=[], status_code=200)
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error in {file_path}: {str(e)}")
+            logger.error(f"File content: {file_content}")
+            return JSONResponse(content=[], status_code=200)
+        except Exception as e:
+            logger.error(f"Error reading file {file_path}: {str(e)}")
+            return JSONResponse(content=[], status_code=200)
+            
         prompts = data.get(aplctn_cd, [])
-        return prompts
+        logger.debug(f"Returning prompts: {prompts}")
+        return JSONResponse(content=prompts, status_code=200)
     except Exception as e:
         logger.error(f"Error in get_prompts: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+        return JSONResponse(content=[], status_code=200)
 
 @route.post("/prompts", response_model=PromptResponse)
 async def add_prompt(prompt: PromptModel):
     """Add a new prompt"""
     logger.debug(f"POST /prompts with data: {prompt.model_dump()}")
     try:
-        file_path = f"{prompt.aplctn_cd}_prompts.json"
+        file_path = os.path.join(SCRIPT_DIR, f"{prompt.aplctn_cd}_prompts.json")
+        logger.debug(f"Writing to file: {file_path}")
         try:
             with open(file_path, 'r') as f:
                 data = json.load(f)
@@ -849,32 +864,48 @@ async def get_frequent_questions(aplctn_cd: str, user_context: str):
     """Get frequent questions for an application and context"""
     logger.debug(f"GET /frequent_questions/{aplctn_cd}/{user_context}")
     try:
-        file_path = f"{aplctn_cd}_freq_questions.json"
+        file_path = os.path.join(SCRIPT_DIR, f"{aplctn_cd}_freq_questions.json")
+        logger.debug(f"Looking for questions file at: {file_path}")
+        
+        if not os.path.exists(file_path):
+            logger.error(f"File does not exist: {file_path}")
+            return JSONResponse(content=[], status_code=200)
+            
         try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                file_content = f.read()
+                logger.debug(f"Raw file content: {file_content}")
+                if not file_content.strip():
+                    logger.warning("File is empty")
+                    return JSONResponse(content=[], status_code=200)
+                data = json.loads(file_content)
+                logger.debug(f"Parsed JSON data: {data}")
         except FileNotFoundError:
-            data = {}
-        except json.JSONDecodeError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid JSON file"
-            )
+            logger.error(f"File not found: {file_path}")
+            return JSONResponse(content=[], status_code=200)
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error in {file_path}: {str(e)}")
+            logger.error(f"File content: {file_content}")
+            return JSONResponse(content=[], status_code=200)
+        except Exception as e:
+            logger.error(f"Error reading file {file_path}: {str(e)}")
+            return JSONResponse(content=[], status_code=200)
+            
         questions = data.get(aplctn_cd, [])
-        return [q for q in questions if q["user_context"] == user_context]
+        filtered_questions = [q for q in questions if q["user_context"] == user_context]
+        logger.debug(f"Returning questions: {filtered_questions}")
+        return JSONResponse(content=filtered_questions, status_code=200)
     except Exception as e:
         logger.error(f"Error in get_frequent_questions: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+        return JSONResponse(content=[], status_code=200)
 
 @route.post("/frequent_questions", response_model=FrequentQuestionResponse)
 async def add_frequent_question(q: FrequentQuestionModel):
     """Add a new frequent question"""
     logger.debug(f"POST /frequent_questions with data: {q.model_dump()}")
     try:
-        file_path = f"{q.aplctn_cd}_freq_questions.json"
+        file_path = os.path.join(SCRIPT_DIR, f"{q.aplctn_cd}_freq_questions.json")
+        logger.debug(f"Writing to file: {file_path}")
         try:
             with open(file_path, 'r') as f:
                 data = json.load(f)
