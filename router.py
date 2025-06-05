@@ -66,6 +66,12 @@ from dependencies import (
 )
 #from ReduceReuseRecycleGENAI.api import get_api_key
 #from ReduceReuseRecycleGENAI.snowflake import snowflake_conn
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+from typing import List, Dict, Any
+from mcp import ClientSession
+from mcp.client.sse import sse_client
 import httpx
 import json
 import uuid
@@ -770,169 +776,88 @@ async def upload_file(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="unauthenticated user"
         )
-# Prompt endpoints
-@route.get("/prompts/{aplctn_cd}", response_model=List[PromptResponse])
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+@route.get("/prompts/{aplctn_cd}")
 async def get_prompts(aplctn_cd: str):
-    """Get all prompts for an application"""
-    logger.debug(f"GET /prompts/{aplctn_cd}")
     try:
-        file_path = os.path.join(SCRIPT_DIR, f"{aplctn_cd}_prompts.json")
-        logger.debug(f"Looking for prompts file at: {file_path}")
-        
-        if not os.path.exists(file_path):
-            logger.error(f"File does not exist: {file_path}")
-            return JSONResponse(content=[], status_code=200)
-            
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                file_content = f.read()
-                logger.debug(f"Raw file content: {file_content}")
-                if not file_content.strip():
-                    logger.warning("File is empty")
-                    return JSONResponse(content=[], status_code=200)
-                data = json.loads(file_content)
-                logger.debug(f"Parsed JSON data: {data}")
-        except FileNotFoundError:
-            logger.error(f"File not found: {file_path}")
-            return JSONResponse(content=[], status_code=200)
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error in {file_path}: {str(e)}")
-            logger.error(f"File content: {file_content}")
-            return JSONResponse(content=[], status_code=200)
-        except Exception as e:
-            logger.error(f"Error reading file {file_path}: {str(e)}")
-            return JSONResponse(content=[], status_code=200)
-            
-        prompts = data.get(aplctn_cd, [])
-        logger.debug(f"Returning prompts: {prompts}")
-        return JSONResponse(content=prompts, status_code=200)
+        async with sse_client("http://localhost:8000/sse") as connection:
+            async with ClientSession(*connection) as session:
+                await session.initialize()
+                result = await session.read_resource(f"genaiplatform://{aplctn_cd}/prompts/hedis-prompt")
+                return result
+    except HTTPException as e:
+        logger.error(f"Request error in get_prompts: {e}")
+        raise e
     except Exception as e:
-        logger.error(f"Error in get_prompts: {str(e)}")
-        return JSONResponse(content=[], status_code=200)
-
-@route.post("/prompts", response_model=PromptResponse)
-async def add_prompt(prompt: PromptModel):
-    """Add a new prompt"""
-    logger.debug(f"POST /prompts with data: {prompt.model_dump()}")
-    try:
-        file_path = os.path.join(SCRIPT_DIR, f"{prompt.aplctn_cd}_prompts.json")
-        logger.debug(f"Writing to file: {file_path}")
-        try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-        except FileNotFoundError:
-            data = {}
-        except json.JSONDecodeError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid JSON file"
-            )
-        
-        # Initialize application prompts if not exists
-        if prompt.aplctn_cd not in data:
-            data[prompt.aplctn_cd] = []
-        
-        # Check for duplicate prompt name
-        for existing_prompt in data[prompt.aplctn_cd]:
-            if existing_prompt["prompt_name"] == prompt.prompt_name:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Prompt with this name already exists"
-                )
-        
-        # Add new prompt
-        prompt_dict = prompt.model_dump()
-        data[prompt.aplctn_cd].append(prompt_dict)
-        
-        # Write to file
-        with open(file_path, 'w') as f:
-            json.dump(data, f, indent=4)
-        
-        return prompt_dict
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error in add_prompt: {str(e)}")
+        logger.error(f"Unexpected error in get_prompts: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e)
         )
 
-# Frequent Questions endpoints
-@route.get("/frequent_questions/{aplctn_cd}/{user_context}", response_model=List[FrequentQuestionResponse])
-async def get_frequent_questions(aplctn_cd: str, user_context: str):
-    """Get frequent questions for an application and context"""
-    logger.debug(f"GET /frequent_questions/{aplctn_cd}/{user_context}")
+@route.get("/frequent_questions/{aplctn_cd}")
+async def get_frequent_questions(aplctn_cd: str):
     try:
-        file_path = os.path.join(SCRIPT_DIR, f"{aplctn_cd}_freq_questions.json")
-        logger.debug(f"Looking for questions file at: {file_path}")
-        
-        if not os.path.exists(file_path):
-            logger.error(f"File does not exist: {file_path}")
-            return JSONResponse(content=[], status_code=200)
-            
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                file_content = f.read()
-                logger.debug(f"Raw file content: {file_content}")
-                if not file_content.strip():
-                    logger.warning("File is empty")
-                    return JSONResponse(content=[], status_code=200)
-                data = json.loads(file_content)
-                logger.debug(f"Parsed JSON data: {data}")
-        except FileNotFoundError:
-            logger.error(f"File not found: {file_path}")
-            return JSONResponse(content=[], status_code=200)
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error in {file_path}: {str(e)}")
-            logger.error(f"File content: {file_content}")
-            return JSONResponse(content=[], status_code=200)
-        except Exception as e:
-            logger.error(f"Error reading file {file_path}: {str(e)}")
-            return JSONResponse(content=[], status_code=200)
-            
-        questions = data.get(aplctn_cd, [])
-        filtered_questions = [q for q in questions if q["user_context"] == user_context]
-        logger.debug(f"Returning questions: {filtered_questions}")
-        return JSONResponse(content=filtered_questions, status_code=200)
+        async with sse_client("http://localhost:8000/sse") as connection:
+            async with ClientSession(*connection) as session:
+                await session.initialize()
+                result = await session.read_resource(f"genaiplatform://{aplctn_cd}/frequent_questions/hedis-question")
+                return result
+    except HTTPException as e:
+        logger.error(f"Request error in get_frequent_questions: {e}")
+        raise e
     except Exception as e:
-        logger.error(f"Error in get_frequent_questions: {str(e)}")
-        return JSONResponse(content=[], status_code=200)
-
-@route.post("/frequent_questions", response_model=FrequentQuestionResponse)
-async def add_frequent_question(q: FrequentQuestionModel):
-    """Add a new frequent question"""
-    logger.debug(f"POST /frequent_questions with data: {q.model_dump()}")
-    try:
-        file_path = os.path.join(SCRIPT_DIR, f"{q.aplctn_cd}_freq_questions.json")
-        logger.debug(f"Writing to file: {file_path}")
-        try:
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-        except FileNotFoundError:
-            data = {}
-        except json.JSONDecodeError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid JSON file"
-            )
-        
-        # Initialize application questions if not exists
-        if q.aplctn_cd not in data:
-            data[q.aplctn_cd] = []
-        
-        # Add new question
-        question_dict = q.model_dump()
-        data[q.aplctn_cd].append(question_dict)
-        
-        # Write to file
-        with open(file_path, 'w') as f:
-            json.dump(data, f, indent=4)
-        
-        return question_dict
-    except Exception as e:
-        logger.error(f"Error in add_frequent_question: {str(e)}")
+        logger.error(f"Unexpected error in get_frequent_questions: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e)
         )
+
+
+@route.post("/add_prompt")
+async def add_prompt(data: PromptModel):
+    try:
+        async with sse_client("http://localhost:8000/sse") as connection:
+            async with ClientSession(*connection) as session:
+                await session.initialize()
+                result = await session.call_tool(name="add-prompts", arguments={
+                    "uri": data.uri,
+                    "prompt": data.prompt
+                })
+                return result
+    except HTTPException as e:
+        logger.error(f"Request error in add_prompt: {e}")
+        raise e
+    except Exception as e:
+        logger.error(f"Unexpected error in add_prompt: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e)
+        )
+
+
+@route.post("/add_frequent_question")
+async def add_frequent_question(data: FrequentQuestionModel):
+    try:
+        async with sse_client("http://localhost:8000/sse") as connection:
+            async with ClientSession(*connection) as session:
+                await session.initialize()
+                result = await session.call_tool(name="add-frequent-questions", arguments={
+                    "uri": data.uri,
+                    "question": data.question
+                })
+                return result
+    except HTTPException as e:
+        logger.error(f"Request error in add_frequent_question: {e}")
+        raise e
+    except Exception as e:
+        logger.error(f"Unexpected error in add_frequent_question: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(e)
+        )
+
+
