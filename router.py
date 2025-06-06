@@ -788,16 +788,18 @@ async def get_prompts(aplctn_cd: str):
                 await session.initialize()
                 result = await session.read_resource(f"genaiplatform://{aplctn_cd}/prompts/hedis-prompt")
 
-                # ✅ Extract just the prompt list
-                prompts = result.get(aplctn_cd, [])
-                return prompts
+                # ✅ Extract prompts from result["contents"][0]["text"]
+                contents = result.get("contents", [])
+                if contents and "text" in contents[0]:
+                    return contents[0]["text"]
+                else:
+                    return []  # no prompts found
     except HTTPException as e:
         logger.error(f"Request error in get_prompts: {e}")
         raise e
     except Exception as e:
         logger.error(f"Unexpected error in get_prompts: {e}")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
-
 
 @route.get("/frequent_questions/{aplctn_cd}")
 async def get_frequent_questions(aplctn_cd: str):
