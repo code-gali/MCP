@@ -783,20 +783,21 @@ logger = logging.getLogger(__name__)
 @route.get("/prompts/{aplctn_cd}")
 async def get_prompts(aplctn_cd: str):
     try:
-        async with sse_client("http://localhost:8000/sse") as connection:
+        async with sse_client("http://<EC2-IP>:8001/sse") as connection:
             async with ClientSession(*connection) as session:
                 await session.initialize()
                 result = await session.read_resource(f"genaiplatform://{aplctn_cd}/prompts/hedis-prompt")
-                return result
+
+                # ✅ Extract just the prompt list
+                prompts = result.get(aplctn_cd, [])
+                return prompts
     except HTTPException as e:
         logger.error(f"Request error in get_prompts: {e}")
         raise e
     except Exception as e:
         logger.error(f"Unexpected error in get_prompts: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+
 
 @route.get("/frequent_questions/{aplctn_cd}")
 async def get_frequent_questions(aplctn_cd: str):
