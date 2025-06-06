@@ -20,12 +20,22 @@ async def frequent_questions(aplctn_cd: str, user_context: str) -> List[str]:
     aplcn_question = freq_questions.get(aplctn_cd)
     return [rec["prompt"] for rec in aplcn_question if rec["user_context"] == user_context]
 
-@mcp.resource("genaiplatform://{aplctn_cd}/prompts/{prompt_name}")
-async def prompt_templates(aplctn_cd: str, prompt_name: str) -> List[str]:
-    resource_name = aplctn_cd + "_prompts.json"
-    prompt_data = json.load(open(resource_name))
-    aplcn_prompts = prompt_data.get(aplctn_cd)
-    return [rec["content"] for rec in aplcn_prompts if rec["prompt_name"] == prompt_name]
+@mcp.resource("genaiplatform://{aplctn_cd}/prompts")
+async def prompt_list_by_app(aplctn_cd: str) -> List[dict]:
+    """Return all prompts for a given application code"""
+    logger.debug(f"GET all prompts for application: {aplctn_cd}")
+    try:
+        file_path = f"{aplctn_cd}_prompts.json"
+        data = ensure_json_file(file_path, {aplctn_cd: []})
+        prompts = data.get(aplctn_cd, [])
+        return prompts  # returns full list of prompts (each with prompt_name, description, content)
+    except Exception as e:
+        logger.error(f"Error loading prompts for {aplctn_cd}: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error loading prompts: {str(e)}"
+        )
+
 
 @mcp.tool(
         name="add-frequent-questions"
