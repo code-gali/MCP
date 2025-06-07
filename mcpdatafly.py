@@ -5,6 +5,8 @@ from pathlib import Path
 import json
 from typing import List
 from fastapi import HTTPException, status
+import logging
+logger=logging.getLogger(__name__)
 
 from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.fastmcp.prompts import Prompt
