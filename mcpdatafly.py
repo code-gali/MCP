@@ -32,19 +32,21 @@ def ensure_json_file(file_path: str, default_data: dict) -> dict:
             detail=f"Error handling JSON file: {str(e)}"
         )
 
-@mcp.resource("genaiplatform://{aplctn_cd}/frequent_questions/{user_context}")
-async def frequent_questions(aplctn_cd: str, user_context: str) -> List[str]:
+@mcp.resource("genaiplatform://{aplctn_cd}/frequent_questions")
+async def frequent_questions_by_app(aplctn_cd: str) -> List[dict]:
+    """Return all frequent questions for a given application code"""
+    logger.debug(f"GET all frequent questions for application: {aplctn_cd}")
     try:
-        resource_name = aplctn_cd + "_freq_questions.json"
-        with open(resource_name) as f:
-            freq_questions = json.load(f)
-        aplcn_question = freq_questions.get(aplctn_cd, [])
-        return [rec["prompt"] for rec in aplcn_question if rec["user_context"] == user_context]
+        file_path = f"{aplctn_cd}_freq_questions.json"
+        with open(file_path) as f:
+            data = json.load(f)
+
+        return data.get(aplctn_cd, [])  # list of { user_context, prompt }
     except Exception as e:
-        logger.error(f"Error in frequent_questions: {str(e)}")
+        logger.error(f"Error loading frequent questions for {aplctn_cd}: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Error retrieving frequent questions: {str(e)}"
+            detail=f"Error loading frequent questions: {str(e)}"
         )
 
 @mcp.resource("genaiplatform://{aplctn_cd}/prompts")
