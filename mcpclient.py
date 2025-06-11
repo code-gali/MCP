@@ -41,9 +41,10 @@ async def sse_run():
             print(session)
             # Initialize the connection
             await session.initialize()
+            
 
             print("Session Initialized")
-            ready_prompts_response=await session.(name="ready-prompts",arguments={})
+            ready_prompts_response=await session.list_prompts()
             for category,prompts in ready_prompts_response["prompts"].items():
                 print(f"\nCategory:{category}")
                 for prompt_obj in prompts:
@@ -51,6 +52,7 @@ async def sse_run():
             # List available resources
             resources = await session.list_resources()
             print(resources)
+            
 
             # List available tools
             tools = await session.list_tools()
