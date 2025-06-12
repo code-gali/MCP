@@ -1,125 +1,198 @@
 import streamlit as st
-import asyncio
-from datetime import datetime
-from fastmcp.client import FastMCPClient
 import httpx
+import asyncio
+import json
+from datetime import datetime
 
-# Page setup
-st.set_page_config(page_title="Milliman MCP Tools Test", layout="wide")
+# Page config
+st.set_page_config(
+    page_title="Milliman MCP Tools Test",
+    page_icon="🧪",
+    layout="wide"
+)
 
-st.title("🧪 Milliman MCP Tools Test UI")
-st.markdown("This UI tests MCP tools over SSE using FastMCPClient.")
+# Title and description
+st.title("🧪 Milliman MCP Tools Test Interface")
+st.markdown("""
+This interface allows you to test the Milliman MCP tools:
+- Get Token
+- MCID Search
+- Submit Medical
+""")
 
-# Async tool caller
-async def call_mcp_tool(tool_name: str, input_data: dict = None) -> dict:
-    client = FastMCPClient("http://localhost:8000/sse")
-    return await client.call_tool(tool_name, input_data)
+# Initialize session state for storing token
+if 'access_token' not in st.session_state:
+    st.session_state.access_token = None
 
-# Section 1: Get Token
-st.header("1️⃣ Get Token")
+# Server configuration
+SERVER_URL = "http://localhost:8000"
+
+# Function to make async HTTP requests
+async def make_request(url, method="GET", headers=None, data=None, json_data=None):
+    async with httpx.AsyncClient() as client:
+        if method == "GET":
+            response = await client.get(url, headers=headers)
+        else:
+            response = await client.post(url, headers=headers, data=data, json=json_data)
+        return response
+
+# Get Token Tool
+st.header("1. Get Token")
 if st.button("Get Token"):
-    with st.spinner("Fetching token from MCP..."):
+    with st.spinner("Getting token..."):
         try:
-            result = asyncio.run(call_mcp_tool("get_token"))
-            token = result.get("body", {}).get("access_token")
-            if token:
-                st.success("Token fetched:")
-                st.code(token)
+            response = asyncio.run(make_request(
+                url=f"{SERVER_URL}/tool/get_token",
+                method="POST"
+            ))
+            if response.status_code == 200:
+                st.session_state.access_token = response.json().get('body', {}).get('access_token')
+                st.success("Token obtained successfully!")
+                st.json(response.json())
             else:
-                st.warning("No token found in response.")
-            st.json(result)
+                st.error(f"Error: {response.text}")
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"Error: {str(e)}")
 
-# Section 2: MCID Search
-st.header("2️⃣ MCID Search")
-with st.form("mcid_form"):
-    st.subheader("Consumer Info")
+# MCID Search Tool
+st.header("2. MCID Search")
+with st.form("mcid_search_form"):
+    st.subheader("Consumer Information")
     col1, col2 = st.columns(2)
     with col1:
-        first = st.text_input("First Name")
-        sex = st.selectbox("Gender", ["M", "F"])
-        ssn = st.text_input("SSN")
+        first_name = st.text_input("First Name", key="mcid_first_name")
+        sex = st.selectbox("Gender", ["M", "F"], key="mcid_sex")
+        ssn = st.text_input("SSN", key="mcid_ssn")
     with col2:
-        last = st.text_input("Last Name")
-        dob = st.date_input("DOB")
-        zipc = st.text_input("ZIP Code")
-
-    if st.form_submit_button("Search MCID"):
-        with st.spinner("Running MCID search..."):
-            payload = {
-                "requestID": "1",
-                "processStatus": {
-                    "completed": "false",
-                    "isMemput": "false",
-                    "errorCode": None,
-                    "errorText": None
-                },
-                "consumer": [{
-                    "firstName": first,
-                    "lastName": last,
-                    "sex": sex,
-                    "dob": dob.strftime("%Y-%m-%d"),
-                    "addressList": [{"type": "P", "zip": zipc}],
-                    "id": {"ssn": ssn}
-                }],
-                "searchSetting": {"minScore": "0", "maxResult": "1"}
-            }
+        last_name = st.text_input("Last Name", key="mcid_last_name")
+        dob = st.date_input("Date of Birth", key="mcid_dob")
+        zip_code = st.text_input("ZIP Code", key="mcid_zip")
+    
+    submitted = st.form_submit_button("Search MCID")
+    
+    if submitted:
+        with st.spinner("Searching MCID..."):
             try:
-                result = asyncio.run(call_mcp_tool("mcid_search", payload))
-                st.success("MCID search complete.")
-                st.json(result)
+                mcid_data = {
+                    "requestID": "1",
+                    "processStatus": {
+                        "completed": "false",
+                        "isMemput": "false",
+                        "errorCode": None,
+                        "errorText": None
+                    },
+                    "consumer": [{
+                        "firstName": first_name,
+                        "lastName": last_name,
+                        "sex": sex,
+                        "dob": dob.strftime("%Y-%m-%d"),
+                        "addressList": [{
+                            "type": "P",
+                            "zip": zip_code
+                        }],
+                        "id": {
+                            "ssn": ssn
+                        }
+                    }],
+                    "searchSetting": {
+                        "minScore": "0",
+                        "maxResult": "1"
+                    }
+                }
+                
+                response = asyncio.run(make_request(
+                    url=f"{SERVER_URL}/tool/mcid_search",
+                    method="POST",
+                    json_data=mcid_data
+                ))
+                
+                if response.status_code == 200:
+                    st.success("MCID Search completed successfully!")
+                    st.json(response.json())
+                else:
+                    st.error(f"Error: {response.text}")
             except Exception as e:
-                st.error(f"Error: {e}")
+                st.error(f"Error: {str(e)}")
 
-# Section 3: Submit Medical
-st.header("3️⃣ Submit Medical")
-with st.form("med_form"):
+# Submit Medical Tool
+st.header("3. Submit Medical")
+with st.form("medical_submit_form"):
     col1, col2 = st.columns(2)
     with col1:
-        fname = st.text_input("First Name")
-        ssn = st.text_input("SSN")
-        gender = st.selectbox("Gender", ["M", "F"])
+        first_name = st.text_input("First Name", key="med_first_name")
+        ssn = st.text_input("SSN", key="med_ssn")
+        gender = st.selectbox("Gender", ["M", "F"], key="med_gender")
     with col2:
-        lname = st.text_input("Last Name")
-        dob = st.date_input("DOB")
-        caller = st.text_input("Caller ID")
-
+        last_name = st.text_input("Last Name", key="med_last_name")
+        dob = st.date_input("Date of Birth", key="med_dob")
+        caller_id = st.text_input("Caller ID", key="med_caller_id")
+    
     st.subheader("ZIP Codes")
-    z1, z2, z3 = st.columns(3)
-    with z1:
-        zip1 = st.text_input("ZIP 1")
-    with z2:
-        zip2 = st.text_input("ZIP 2")
-    with z3:
-        zip3 = st.text_input("ZIP 3")
-
-    if st.form_submit_button("Submit Medical"):
-        with st.spinner("Submitting medical request..."):
-            med_payload = {
-                "requestID": str(datetime.now().timestamp()),
-                "firstName": fname,
-                "lastName": lname,
-                "ssn": ssn,
-                "dateOfBirth": dob.strftime("%Y-%m-%d"),
-                "gender": gender,
-                "zipCodes": [zip1, zip2, zip3],
-                "callerId": caller
-            }
+    col3, col4, col5 = st.columns(3)
+    with col3:
+        zip1 = st.text_input("ZIP Code 1", key="med_zip1")
+    with col4:
+        zip2 = st.text_input("ZIP Code 2", key="med_zip2")
+    with col5:
+        zip3 = st.text_input("ZIP Code 3", key="med_zip3")
+    
+    submitted = st.form_submit_button("Submit Medical")
+    
+    if submitted:
+        with st.spinner("Submitting medical information..."):
             try:
-                result = asyncio.run(call_mcp_tool("submit_medical", med_payload))
-                st.success("Medical request submitted.")
-                st.json(result)
+                medical_data = {
+                    "requestID": str(datetime.now().timestamp()),
+                    "firstName": first_name,
+                    "lastName": last_name,
+                    "ssn": ssn,
+                    "dateOfBirth": dob.strftime("%Y-%m-%d"),
+                    "gender": gender,
+                    "zipCodes": [zip1, zip2, zip3],
+                    "callerId": caller_id
+                }
+                
+                response = asyncio.run(make_request(
+                    url=f"{SERVER_URL}/tool/submit_medical",
+                    method="POST",
+                    json_data=medical_data
+                ))
+                
+                if response.status_code == 200:
+                    st.success("Medical submission completed successfully!")
+                    st.json(response.json())
+                else:
+                    st.error(f"Error: {response.text}")
             except Exception as e:
-                st.error(f"Error: {e}")
+                st.error(f"Error: {str(e)}")
 
-# Section 4: Run /all
-st.header("4️⃣ Run All (Optional FastAPI Test)")
-if st.button("Run /all endpoint"):
-    with st.spinner("Calling /all FastAPI route..."):
+# Run all tools
+st.header("4. Run All Tools")
+if st.button("Run All Tools"):
+    with st.spinner("Running all tools..."):
         try:
-            response = httpx.get("http://localhost:8000/all")
-            st.success("Call completed.")
-            st.json(response.json())
+            response = asyncio.run(make_request(
+                url=f"{SERVER_URL}/all",
+                method="GET"
+            ))
+            if response.status_code == 200:
+                st.success("All tools executed successfully!")
+                st.json(response.json())
+            else:
+                st.error(f"Error: {response.text}")
         except Exception as e:
-            st.error(f"Error calling /all: {e}")
+            st.error(f"Error: {str(e)}")
+
+# Add some styling
+st.markdown("""
+<style>
+    .stButton>button {
+        width: 100%;
+    }
+    .stForm {
+        background-color: #f0f2f6;
+        padding: 20px;
+        border-radius: 10px;
+    }
+</style>
+""", unsafe_allow_html=True) 
