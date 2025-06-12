@@ -71,7 +71,7 @@ with st.form("mcid_search_form"):
         ssn = st.text_input("SSN", key="mcid_ssn")
     with col2:
         last_name = st.text_input("Last Name", key="mcid_last_name")
-        dob = st.date_input("Date of Birth", key="mcid_dob")
+        dob = st.text_input("Date of Birth (YYYY-MM-DD)", placeholder="YYYY-MM-DD", key="mcid_dob")
         zip_code = st.text_input("ZIP Code", key="mcid_zip")
     
     submitted = st.form_submit_button("Search MCID")
@@ -91,7 +91,7 @@ with st.form("mcid_search_form"):
                         "firstName": first_name,
                         "lastName": last_name,
                         "sex": sex,
-                        "dob": dob.strftime("%Y-%m-%d"),
+                        "dob": dob,
                         "addressList": [{
                             "type": "P",
                             "zip": zip_code
@@ -126,7 +126,7 @@ with st.form("medical_submit_form"):
         gender = st.selectbox("Gender", ["M", "F"], key="med_gender")
     with col2:
         last_name = st.text_input("Last Name", key="med_last_name")
-        dob = st.date_input("Date of Birth", key="med_dob")
+        dob = st.text_input("Date of Birth (YYYY-MM-DD)", placeholder="YYYY-MM-DD", key="med_dob")
         caller_id = st.text_input("Caller ID", key="med_caller_id")
     
     st.subheader("ZIP Codes")
@@ -148,7 +148,7 @@ with st.form("medical_submit_form"):
                     "firstName": first_name,
                     "lastName": last_name,
                     "ssn": ssn,
-                    "dateOfBirth": dob.strftime("%Y-%m-%d"),
+                    "dateOfBirth": dob,
                     "gender": gender,
                     "zipCodes": [zip1, zip2, zip3],
                     "callerId": caller_id
