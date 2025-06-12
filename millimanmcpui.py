@@ -1,5 +1,4 @@
 import streamlit as st
-import httpx
 import asyncio
 import json
 from datetime import datetime
@@ -36,6 +35,9 @@ async def call_mcp_tool(tool_name, arguments=None):
             async with ClientSession(*sse) as session:
                 await session.initialize()
                 result = await session.call_tool(name=tool_name, arguments=arguments)
+                # Convert the result to a dictionary if it's not already
+                if hasattr(result, "model_dump"):
+                    return result.model_dump()
                 return result
     except Exception as e:
         return {"error": str(e)}
@@ -46,12 +48,15 @@ if st.button("Get Token"):
     with st.spinner("Getting token..."):
         try:
             result = asyncio.run(call_mcp_tool("get_token"))
-            if not result.get("error"):
-                st.session_state.access_token = result.get('body', {}).get('access_token')
+            if isinstance(result, dict) and "error" in result:
+                st.error(f"Error: {result['error']}")
+            else:
+                # Handle the result based on its structure
+                body = result.get('body', {}) if isinstance(result, dict) else {}
+                if isinstance(body, dict):
+                    st.session_state.access_token = body.get('access_token')
                 st.success("Token obtained successfully!")
                 st.json(result)
-            else:
-                st.error(f"Error: {result.get('error')}")
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
@@ -103,8 +108,8 @@ with st.form("mcid_search_form"):
                 
                 result = asyncio.run(call_mcp_tool("mcid_search", mcid_data))
                 
-                if result.get("error"):
-                    st.error(f"Error: {result.get('error')}")
+                if isinstance(result, dict) and "error" in result:
+                    st.error(f"Error: {result['error']}")
                 else:
                     st.success("MCID Search completed successfully!")
                     st.json(result)
@@ -151,8 +156,8 @@ with st.form("medical_submit_form"):
                 
                 result = asyncio.run(call_mcp_tool("submit_medical", medical_data))
                 
-                if result.get("error"):
-                    st.error(f"Error: {result.get('error')}")
+                if isinstance(result, dict) and "error" in result:
+                    st.error(f"Error: {result['error']}")
                 else:
                     st.success("Medical submission completed successfully!")
                     st.json(result)
@@ -165,8 +170,8 @@ if st.button("Run All Tools"):
     with st.spinner("Running all tools..."):
         try:
             result = asyncio.run(call_mcp_tool("all"))
-            if result.get("error"):
-                st.error(f"Error: {result.get('error')}")
+            if isinstance(result, dict) and "error" in result:
+                st.error(f"Error: {result['error']}")
             else:
                 st.success("All tools executed successfully!")
                 st.json(result)
