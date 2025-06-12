@@ -3,6 +3,8 @@ import httpx
 import asyncio
 import json
 from datetime import datetime
+from mcp.client.sse import sse_client
+from mcp import ClientSession
 
 # Page config
 st.set_page_config(
@@ -25,32 +27,31 @@ if 'access_token' not in st.session_state:
     st.session_state.access_token = None
 
 # Server configuration
-SERVER_URL = "http://localhost:8000"
+SERVER_URL = "http://localhost:8000/sse"
 
-# Function to make async HTTP requests
-async def make_request(url, method="GET", headers=None, data=None, json_data=None):
-    async with httpx.AsyncClient() as client:
-        if method == "GET":
-            response = await client.get(url, headers=headers)
-        else:
-            response = await client.post(url, headers=headers, data=data, json=json_data)
-        return response
+# Function to call MCP tools using client session
+async def call_mcp_tool(tool_name, arguments=None):
+    try:
+        async with sse_client(url=SERVER_URL) as sse:
+            async with ClientSession(*sse) as session:
+                await session.initialize()
+                result = await session.call_tool(name=tool_name, arguments=arguments)
+                return result
+    except Exception as e:
+        return {"error": str(e)}
 
 # Get Token Tool
 st.header("1. Get Token")
 if st.button("Get Token"):
     with st.spinner("Getting token..."):
         try:
-            response = asyncio.run(make_request(
-                url=f"{SERVER_URL}/tool/get_token",
-                method="POST"
-            ))
-            if response.status_code == 200:
-                st.session_state.access_token = response.json().get('body', {}).get('access_token')
+            result = asyncio.run(call_mcp_tool("get_token"))
+            if not result.get("error"):
+                st.session_state.access_token = result.get('body', {}).get('access_token')
                 st.success("Token obtained successfully!")
-                st.json(response.json())
+                st.json(result)
             else:
-                st.error(f"Error: {response.text}")
+                st.error(f"Error: {result.get('error')}")
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
@@ -100,17 +101,13 @@ with st.form("mcid_search_form"):
                     }
                 }
                 
-                response = asyncio.run(make_request(
-                    url=f"{SERVER_URL}/tool/mcid_search",
-                    method="POST",
-                    json_data=mcid_data
-                ))
+                result = asyncio.run(call_mcp_tool("mcid_search", mcid_data))
                 
-                if response.status_code == 200:
-                    st.success("MCID Search completed successfully!")
-                    st.json(response.json())
+                if result.get("error"):
+                    st.error(f"Error: {result.get('error')}")
                 else:
-                    st.error(f"Error: {response.text}")
+                    st.success("MCID Search completed successfully!")
+                    st.json(result)
             except Exception as e:
                 st.error(f"Error: {str(e)}")
 
@@ -152,17 +149,13 @@ with st.form("medical_submit_form"):
                     "callerId": caller_id
                 }
                 
-                response = asyncio.run(make_request(
-                    url=f"{SERVER_URL}/tool/submit_medical",
-                    method="POST",
-                    json_data=medical_data
-                ))
+                result = asyncio.run(call_mcp_tool("submit_medical", medical_data))
                 
-                if response.status_code == 200:
-                    st.success("Medical submission completed successfully!")
-                    st.json(response.json())
+                if result.get("error"):
+                    st.error(f"Error: {result.get('error')}")
                 else:
-                    st.error(f"Error: {response.text}")
+                    st.success("Medical submission completed successfully!")
+                    st.json(result)
             except Exception as e:
                 st.error(f"Error: {str(e)}")
 
@@ -171,15 +164,12 @@ st.header("4. Run All Tools")
 if st.button("Run All Tools"):
     with st.spinner("Running all tools..."):
         try:
-            response = asyncio.run(make_request(
-                url=f"{SERVER_URL}/all",
-                method="GET"
-            ))
-            if response.status_code == 200:
-                st.success("All tools executed successfully!")
-                st.json(response.json())
+            result = asyncio.run(call_mcp_tool("all"))
+            if result.get("error"):
+                st.error(f"Error: {result.get('error')}")
             else:
-                st.error(f"Error: {response.text}")
+                st.success("All tools executed successfully!")
+                st.json(result)
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
