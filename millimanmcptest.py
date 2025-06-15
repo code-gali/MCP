@@ -6,6 +6,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
+from mcp import ClientSession
+from mcp.client.memory_streams import create_memory_object_stream_pair
  
 # --- Pydantic Models for Input Validation ---
 class ProcessStatus(BaseModel):
@@ -97,21 +99,24 @@ async def mcid_search_tool(request_body: MCIDRequestBody) -> dict:
         except Exception as e:
             return {'status_code': 500, 'error': str(e)}
  
-@mcp.tool(
-    name="submit_medical", 
-    description="Submit medical eligibility with validated input"
-)
+@mcp.tool(name="submit_medical", description="Submit medical eligibility request")
 async def submit_medical_tool(request_body: MedicalRequestBody) -> dict:
-    token_result = await get_token_tool()
-    if token_result.get('status_code') != 200:
-        return {'status_code': 401, 'error': 'Failed to get access token'}
-    
-    token = token_result.get('body', {}).get('access_token')
-    if not token:
-        return {'status_code': 401, 'error': 'No access token in response'}
+    try:
+        # Step 1: Create an in-memory MCP client session
+        send, recv = create_memory_object_stream_pair()
+        async with ClientSession(recv, send) as session:
+            await session.initialize()
 
-    async with httpx.AsyncClient() as client:
-        try:
+            # Step 2: Call get_token tool using MCP
+            token_result = await session.call_tool(name="get_token")
+            token_body = token_result.body if hasattr(token_result, "body") else {}
+            token = token_body.get("access_token")
+
+            if not token:
+                return {"status_code": 401, "error": "Access token missing in get_token response"}
+
+        # Step 3: Use the token to submit the medical request
+        async with httpx.AsyncClient() as client:
             response = await client.post(
                 MEDICAL_URL,
                 headers={
@@ -120,9 +125,13 @@ async def submit_medical_tool(request_body: MedicalRequestBody) -> dict:
                 },
                 json=request_body.model_dump()
             )
-            return {'status_code': response.status_code, 'body': response.json() if response.content else {}}
-        except Exception as e:
-            return {'status_code': 500, 'error': str(e)}
+            return {
+                "status_code": response.status_code,
+                "body": response.json() if response.content else {}
+            }
+
+    except Exception as e:
+        return {"status_code": 500, "error": str(e)}
  
 # --- Root FastAPI app with MCP routes included ---
 app = FastAPI(
