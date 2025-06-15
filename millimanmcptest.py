@@ -5,10 +5,8 @@ from fastmcp import FastMCP
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
-from mcp import ClientSession
-from mcp.client.memory_streams import create_memory_object_stream_pair
- 
+from typing import List, Optional, Dict
+
 # --- Pydantic Models for Input Validation ---
 class ProcessStatus(BaseModel):
     completed: str = Field(..., description="Process completion status")
@@ -48,45 +46,41 @@ class MedicalRequestBody(BaseModel):
     zipCodes: List[str] = Field(..., description="List of ZIP codes")
     callerId: str = Field(..., description="Caller ID")
 
-# --- Configuration (env overrideable) ---
-TOKEN_URL = os.getenv(
-    "TOKEN_URL",
-    "XXXX"
-)
+# --- Configuration ---
+TOKEN_URL = os.getenv("TOKEN_URL", "XXXX")
 TOKEN_PAYLOAD = {
     'grant_type': 'client_credentials',
     'client_id': os.getenv("CLIENT_ID", 'MILLIMAN'),
-    'client_secret': os.getenv(
-        "CLIENT_SECRET",
-        'XXXX'
-    )
+    'client_secret': os.getenv("CLIENT_SECRET", 'XXXX')
 }
 TOKEN_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
-MCID_URL = os.getenv(
-    "MCID_URL",
-    "XXXX"
-)
-MEDICAL_URL = os.getenv(
-    "MEDICAL_URL",
-    "XXXX"
-)
- 
+MCID_URL = os.getenv("MCID_URL", "XXXX")
+MEDICAL_URL = os.getenv("MEDICAL_URL", "XXXX")
+
 # --- FastMCP setup ---
 mcp = FastMCP(name="Milliman Dashboard Tools")
- 
-@mcp.tool(name="get_token", description="Fetch OAuth2 access token (no input)")
-async def get_token_tool() -> dict:
+
+# --- Helper function (used instead of calling get_token_tool directly) ---
+async def _fetch_token() -> Optional[str]:
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(TOKEN_URL, data=TOKEN_PAYLOAD, headers=TOKEN_HEADERS)
-            return {'status_code': response.status_code, 'body': response.json() if response.content else {}}
+            if response.status_code == 200:
+                return response.json().get("access_token")
         except Exception as e:
-            return {'status_code': 500, 'error': str(e)} 
- 
-@mcp.tool(
-    name="mcid_search", 
-    description="Perform MCID search with validated input"
-)
+            print(f"Token fetch error: {e}")
+    return None
+
+# --- Tools ---
+@mcp.tool(name="get_token", description="Fetch OAuth2 access token (no input)")
+async def get_token_tool() -> dict:
+    token = await _fetch_token()
+    if token:
+        return {"status_code": 200, "body": {"access_token": token}}
+    else:
+        return {"status_code": 500, "error": "Failed to fetch token"}
+
+@mcp.tool(name="mcid_search", description="Perform MCID search with validated input")
 async def mcid_search_tool(request_body: MCIDRequestBody) -> dict:
     async with httpx.AsyncClient(verify=False) as client:
         try:
@@ -95,28 +89,21 @@ async def mcid_search_tool(request_body: MCIDRequestBody) -> dict:
                 headers={"Content-Type": "application/json", "Apiuser": "MillimanUser"},
                 json=request_body.model_dump()
             )
-            return {'status_code': response.status_code, 'body': response.json() if response.content else {}}
+            return {
+                'status_code': response.status_code,
+                'body': response.json() if response.content else {}
+            }
         except Exception as e:
             return {'status_code': 500, 'error': str(e)}
- 
-@mcp.tool(name="submit_medical", description="Submit medical eligibility request")
+
+@mcp.tool(name="submit_medical", description="Submit medical eligibility with validated input")
 async def submit_medical_tool(request_body: MedicalRequestBody) -> dict:
-    try:
-        # Step 1: Create an in-memory MCP client session
-        send, recv = create_memory_object_stream_pair()
-        async with ClientSession(recv, send) as session:
-            await session.initialize()
+    token = await _fetch_token()
+    if not token:
+        return {'status_code': 401, 'error': 'Failed to get access token'}
 
-            # Step 2: Call get_token tool using MCP
-            token_result = await session.call_tool(name="get_token")
-            token_body = token_result.body if hasattr(token_result, "body") else {}
-            token = token_body.get("access_token")
-
-            if not token:
-                return {"status_code": 401, "error": "Access token missing in get_token response"}
-
-        # Step 3: Use the token to submit the medical request
-        async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client:
+        try:
             response = await client.post(
                 MEDICAL_URL,
                 headers={
@@ -126,14 +113,13 @@ async def submit_medical_tool(request_body: MedicalRequestBody) -> dict:
                 json=request_body.model_dump()
             )
             return {
-                "status_code": response.status_code,
-                "body": response.json() if response.content else {}
+                'status_code': response.status_code,
+                'body': response.json() if response.content else {}
             }
+        except Exception as e:
+            return {'status_code': 500, 'error': str(e)}
 
-    except Exception as e:
-        return {"status_code": 500, "error": str(e)}
- 
-# --- Root FastAPI app with MCP routes included ---
+# --- FastAPI setup ---
 app = FastAPI(
     title="Milliman Dashboard",
     description="FastMCP + FastAPI combined",
@@ -146,15 +132,15 @@ app.add_middleware(
     allow_headers=["*"],
     allow_credentials=True,
 )
-# Include all FastMCP routes: /tool/{tool}, /prompt/{prompt}, /messages
-app.mount("/",mcp.sse_app())
- 
+
+# --- Mount MCP tools as server ---
+app.mount("/", mcp.sse_app())
+
+# --- Optional test route to run all (can be removed) ---
 @app.get("/all")
 async def call_all():
-    """Run get_token, mcid_search and submit_medical with empty values."""
     try:
-        token_task = get_token_tool()
-        # Create empty request bodies for testing
+        token_task = _fetch_token()  # ✅ Use helper directly
         empty_mcid_body = MCIDRequestBody(
             requestID="1",
             processStatus=ProcessStatus(completed="false", isMemput="false"),
@@ -169,7 +155,7 @@ async def call_all():
             searchSetting=SearchSetting(minScore="100", maxResult="1")
         )
         empty_medical_body = MedicalRequestBody(
-            requestId="XXXX",
+            requestId="REQ-TEST",
             firstName="",
             lastName="",
             ssn="",
@@ -182,12 +168,13 @@ async def call_all():
         medical_task = submit_medical_tool(empty_medical_body)
         token_res, mcid_res, med_res = await asyncio.gather(token_task, mcid_task, medical_task)
         return {
-            "get_token": token_res,
+            "get_token": {"access_token": token_res},
             "mcid_search": mcid_res,
             "submit_medical": med_res
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
- 
+
+# --- Entry point ---
 if __name__ == "__main__":
     mcp.run(transport="sse")
