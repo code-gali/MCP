@@ -19,9 +19,8 @@ class Address(BaseModel):
     zip: Optional[str] = Field(None, description="ZIP code")
 
 class Consumer(BaseModel):
-    firstName: str = Field(..., description="First name")
-    lastName: str = Field(..., description="Last name")
-    middleName: Optional[str] = Field(None, description="Middle name")
+    fname: str = Field(..., description="First name")
+    lname: str = Field(..., description="Last name")
     sex: str = Field(..., description="Gender")
     dob: str = Field(..., description="Date of birth")
     addressList: List[Address] = Field(..., description="List of addresses")
@@ -38,7 +37,7 @@ class MCIDRequestBody(BaseModel):
     searchSetting: SearchSetting = Field(..., description="Search settings")
 
 class MedicalRequestBody(BaseModel):
-    requestID: str = Field(..., description="Request ID")
+    requestId: str = Field(..., description="Request ID")
     firstName: str = Field(..., description="First name")
     lastName: str = Field(..., description="Last name")
     ssn: str = Field(..., description="Social Security Number")
@@ -69,25 +68,6 @@ MEDICAL_URL = os.getenv(
     "MEDICAL_URL",
     "XXXX"
 )
- 
-# --- Default bodies for /all ---
-MCID_REQUEST_BODY = {
-    "requestID": "1",
-    "processStatus": {"completed": "false", "isMemput": "false", "errorCode": None, "errorText": None},
-    "consumer": [{"firstName": "XX", "lastName": "XXX", "middleName": None, "sex": "X", "dob": "XXXX",
-                  "addressList": [{"type": "P", "zip": None}], "id": {"ssn": None}}],
-    "searchSetting": {"minScore": "100", "maxResult": "1"}
-}
-MEDICAL_REQUEST_BODY = {
-    "requestID": "",
-    "firstName": "",
-    "lastName": "",
-    "ssn": "",
-    "dateOfBirth": "",
-    "gender": "",
-    "zipCodes": ["", "", ""],
-    "callerId": ""
-}
  
 # --- FastMCP setup ---
 mcp = FastMCP(name="Milliman Dashboard Tools")
@@ -162,11 +142,35 @@ app.mount("/",mcp.sse_app())
  
 @app.get("/all")
 async def call_all():
-    """Run get_token, mcid_search and submit_medical with defaults."""
+    """Run get_token, mcid_search and submit_medical with empty values."""
     try:
         token_task = get_token_tool()
-        mcid_task = mcid_search_tool(MCIDRequestBody(**MCID_REQUEST_BODY))
-        medical_task = submit_medical_tool(MedicalRequestBody(**MEDICAL_REQUEST_BODY))
+        # Create empty request bodies for testing
+        empty_mcid_body = MCIDRequestBody(
+            requestID="1",
+            processStatus=ProcessStatus(completed="false", isMemput="false"),
+            consumer=[Consumer(
+                fname="",
+                lname="",
+                sex="",
+                dob="",
+                addressList=[Address(type="P", zip=None)],
+                id={"ssn": None}
+            )],
+            searchSetting=SearchSetting(minScore="100", maxResult="1")
+        )
+        empty_medical_body = MedicalRequestBody(
+            requestId="XXXX",
+            firstName="",
+            lastName="",
+            ssn="",
+            dateOfBirth="",
+            gender="",
+            zipCodes=["23060", "23229", "23242"],
+            callerId="Milliman-Test16"
+        )
+        mcid_task = mcid_search_tool(empty_mcid_body)
+        medical_task = submit_medical_tool(empty_medical_body)
         token_res, mcid_res, med_res = await asyncio.gather(token_task, mcid_task, medical_task)
         return {
             "get_token": token_res,
