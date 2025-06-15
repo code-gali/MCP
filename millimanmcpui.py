@@ -66,55 +66,74 @@ with st.form("mcid_search_form"):
     st.subheader("Consumer Information")
     col1, col2 = st.columns(2)
     with col1:
-        first_name = st.text_input("First Name", key="mcid_first_name")
-        sex = st.selectbox("Gender", ["M", "F"], key="mcid_sex")
-        ssn = st.text_input("SSN", key="mcid_ssn")
+        first_name = st.text_input("First Name*", key="mcid_first_name", help="Enter first name")
+        sex = st.selectbox("Gender*", ["M", "F"], key="mcid_sex", help="Select gender")
+        ssn = st.text_input("SSN*", key="mcid_ssn", help="Enter SSN in format: XXX-XX-XXXX", placeholder="XXX-XX-XXXX")
     with col2:
-        last_name = st.text_input("Last Name", key="mcid_last_name")
-        dob = st.text_input("Date of Birth (YYYY-MM-DD)", placeholder="YYYY-MM-DD", key="mcid_dob")
-        zip_code = st.text_input("ZIP Code", key="mcid_zip")
+        last_name = st.text_input("Last Name*", key="mcid_last_name", help="Enter last name")
+        dob = st.text_input("Date of Birth* (YYYY-MM-DD)", placeholder="YYYY-MM-DD", key="mcid_dob", help="Enter date in YYYY-MM-DD format")
+        zip_code = st.text_input("ZIP Code*", key="mcid_zip", help="Enter 5-digit ZIP code", placeholder="XXXXX")
+    
+    st.markdown("**Required fields are marked with *")
     
     submitted = st.form_submit_button("Search MCID")
     
     if submitted:
-        with st.spinner("Searching MCID..."):
-            try:
-                mcid_data = {
-                    "requestID": "1",
-                    "processStatus": {
-                        "completed": "false",
-                        "isMemput": "false",
-                        "errorCode": None,
-                        "errorText": None
-                    },
-                    "consumer": [{
-                        "firstName": first_name,
-                        "lastName": last_name,
-                        "sex": sex,
-                        "dob": dob,
-                        "addressList": [{
-                            "type": "P",
-                            "zip": zip_code
+        # Validate inputs
+        errors = []
+        if not first_name:
+            errors.append("First name is required")
+        if not last_name:
+            errors.append("Last name is required")
+        if not ssn or not ssn.replace("-", "").isdigit() or len(ssn.replace("-", "")) != 9:
+            errors.append("SSN must be in format: XXX-XX-XXXX")
+        if not dob or not dob.replace("-", "").isdigit() or len(dob) != 10:
+            errors.append("Date of birth must be in format: YYYY-MM-DD")
+        if not zip_code or not zip_code.isdigit() or len(zip_code) != 5:
+            errors.append("ZIP code must be 5 digits")
+            
+        if errors:
+            for error in errors:
+                st.error(error)
+        else:
+            with st.spinner("Searching MCID..."):
+                try:
+                    mcid_data = {
+                        "requestID": "1",
+                        "processStatus": {
+                            "completed": "false",
+                            "isMemput": "false",
+                            "errorCode": None,
+                            "errorText": None
+                        },
+                        "consumer": [{
+                            "firstName": first_name,
+                            "lastName": last_name,
+                            "sex": sex,
+                            "dob": dob,
+                            "addressList": [{
+                                "type": "P",
+                                "zip": zip_code
+                            }],
+                            "id": {
+                                "ssn": ssn.replace("-", "")  # Remove hyphens from SSN
+                            }
                         }],
-                        "id": {
-                            "ssn": ssn
+                        "searchSetting": {
+                            "minScore": "100",  # Changed to match FastAPI default
+                            "maxResult": "1"
                         }
-                    }],
-                    "searchSetting": {
-                        "minScore": "0",
-                        "maxResult": "1"
                     }
-                }
-                
-                result = asyncio.run(call_mcp_tool("mcid_search", mcid_data))
-                
-                if isinstance(result, dict) and "error" in result:
-                    st.error(f"Error: {result['error']}")
-                else:
-                    st.success("MCID Search completed successfully!")
-                    st.json(result)
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
+                    
+                    result = asyncio.run(call_mcp_tool("mcid_search", mcid_data))
+                    
+                    if isinstance(result, dict) and "error" in result:
+                        st.error(f"Error: {result['error']}")
+                    else:
+                        st.success("MCID Search completed successfully!")
+                        st.json(result)
+                except Exception as e:
+                    st.error(f"Error: {str(e)}")
 
 # Submit Medical Tool
 st.header("3. Submit Medical")
